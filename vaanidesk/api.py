@@ -85,6 +85,8 @@ async def voice(websocket: WebSocket, identifier: str):
             if len(message) > 11_000_000:
                 raise Fault("Voice frame exceeded its size limit.")
             value = json.loads(message)
+            if not isinstance(value, dict):
+                raise Fault("Voice frames must be JSON objects.")
             if value.get("type") == "interrupt":
                 epoch.interrupt()
                 if pending:
@@ -104,7 +106,19 @@ async def voice(websocket: WebSocket, identifier: str):
                 await websocket.send_json(
                     {"type": "error", "message": "Use utterance or interrupt frames."}
                 )
-    except (WebSocketDisconnect, Fault, ValueError):
+    except WebSocketDisconnect:
+        pass
+    except (Fault, ValueError) as error:
+        await websocket.send_json(
+            {
+                "type": "error",
+                "message": str(error)
+                if isinstance(error, Fault)
+                else "Invalid JSON voice frame.",
+            }
+        )
+        await websocket.close(code=1008)
+    finally:
         epoch.interrupt()
         if pending:
             pending.cancel()

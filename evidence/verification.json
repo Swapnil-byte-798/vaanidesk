@@ -2,11 +2,12 @@
   "project": "vaanidesk",
   "verified_at_utc": "2026-11-10",
   "python": "3.12.14",
-  "tests_passed": 31,
+  "tests_passed": 35,
   "tests_skipped": 0,
   "test_exit_code": 0,
   "demo_exit_code": 0,
   "live_provider_verified": false,
   "fixture_tests_are_live_evidence": false,
-  "external_checks": "Provider checks await keys. PostgreSQL RLS and public network checks run separately in CI."
+  "external_checks": "Provider checks await keys. PostgreSQL RLS and public network checks run separately in CI.",
+  "voice_transport": "Real loopback Uvicorn/WebSocket interrupt roundtrip passed without provider calls."
 }

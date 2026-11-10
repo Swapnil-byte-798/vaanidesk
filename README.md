@@ -59,3 +59,14 @@ Confirmation expiry, slot contention, cancellation ownership, handoff, Hindi aff
 ## Next engineering milestone
 
 Measure Hindi STT error and end-to-end turn latency on consented recordings; connect a real calendar only after confirmation and recovery tests.
+
+## Use a real voice turn
+
+With both provider keys configured and the local server running:
+
+```bash
+python examples/voice_turn.py /path/to/utterance.wav
+python examples/voice_turn.py /path/to/confirmation.wav --call-id CALL_ID_FROM_FIRST_TURN
+```
+
+The Python client reads the operator token locally, sends audio to the API, prints the recognized turn and proposed action, and saves streamed MP3 output in `artifacts/reply.mp3`. It makes real STT, planning and TTS calls. Use a non-sensitive recording for the first provider check. Booking changes still require confirmation. The real loopback WebSocket test covers transport without sending audio to a provider.
