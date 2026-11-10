@@ -1,0 +1,32 @@
+name: Python verification
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python: ['3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: ${{ matrix.python }}
+      - run: python -m pip install -e ".[dev]"
+      - run: python -m pytest -q
+      - run: python -m vaanidesk demo
+      - name: Build and exercise installed wheel outside the checkout
+        run: |
+          python -m pip wheel . --no-deps -w /tmp/wheels
+          python -m venv /tmp/package-check
+          /tmp/package-check/bin/pip install /tmp/wheels/*.whl
+          cd /tmp
+          /tmp/package-check/bin/python -m vaanidesk demo
+          /tmp/package-check/bin/python -c "from vaanidesk.api import app; assert app.openapi()['paths']"
+  container:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - run: docker build -t vaanidesk:ci .
+      - run: docker run --rm --entrypoint python vaanidesk:ci -m vaanidesk demo

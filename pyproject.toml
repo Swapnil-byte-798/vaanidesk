@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+[project]
+name = "vaanidesk"
+version = "0.1.0"
+description = "Hindi voice receptionist with durable appointment tools"
+requires-python = ">=3.11"
+dependencies = ["fastapi>=0.115,<1", "uvicorn>=0.30,<1", "httpx[socks]>=0.27,<1", "pydantic>=2.9,<3"]
+[project.optional-dependencies]
+dev = ["pytest>=8,<10"]
+[project.scripts]
+vaanidesk = "vaanidesk.cli:main"
+[tool.setuptools.packages.find]
+include = ["vaanidesk*"]
+[tool.setuptools.package-data]
+vaanidesk = ["*.sql", "*.json"]
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]
